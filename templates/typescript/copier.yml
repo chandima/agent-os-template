@@ -1,0 +1,15 @@
+_min_copier_version: "8.0"
+_subdirectory: .
+_exclude:
+  - "sync-upstream.sh"
+  - ".github/workflows/upstream-sync.yml"
+
+project_name:
+  type: str
+  help: "Repository name"
+language_stack:
+  type: choice
+  choices: ["typescript"]
+
+_tasks:
+  - echo "Bootstrapped {{ project_name }} with Agent‑OS typescript flavour"

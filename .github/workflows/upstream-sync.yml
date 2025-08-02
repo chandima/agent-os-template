@@ -1,0 +1,27 @@
+name: Sync Agent‑OS upstream
+on:
+  schedule: [{ cron: "0 5 * * 2" }]
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT_WITH_PR_RIGHTS }}
+      - name: Configure git
+        run: |
+          git config user.name  "agent-os-bot"
+          git config user.email "bot@example.com"
+          git remote add agent-os-upstream https://github.com/buildermethods/agent-os.git
+      - name: Run sync script
+        run: bash sync-upstream.sh
+      - name: Create pull request if changes
+        run: |
+          if ! git diff --quiet; then
+            branch="chore/agent-os-sync-$(date +%Y%m%d)"
+            git switch -c "$branch"
+            git commit -am "chore: sync Agent‑OS upstream"
+            git push -u origin "$branch"
+            gh pr create --title "Sync Agent‑OS upstream" --body "Automated update"
